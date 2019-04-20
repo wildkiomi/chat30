@@ -3,9 +3,9 @@ import model.Message;
 import model.MessageDecoder;
 import model.MessageEncoder;
 import model.User;
-import parsing.ICommand;
-import parsing.Register;
-import parsing.Writer;
+import org.apache.log4j.Logger;
+import parsing.*;
+
 import java.io.IOException;
 import java.util.*;
 import javax.websocket.EncodeException;
@@ -26,13 +26,13 @@ public class MyServerEndpoint {
     public static ArrayList<User[]> chats = new ArrayList();
     public static ArrayList<User> freeAgents = new ArrayList();
     public static Map<String, ICommand> map = new HashMap<String, ICommand>();
-    public boolean connect=false;
+    private static Logger log= Logger.getLogger(MyServerEndpoint.class);
 
     {
-        //log.info("инициализация arraylist");
+        log.info("initialize arraylist");
         map.put("/register", new Register());
-        //map.put("/leave",new Leave());
-        //map.put("/exit",new Exit());
+        map.put("/leave",new Leave());
+        map.put("/exit",new Exit());
         map.put("/message", new Writer());
     }
 
@@ -111,8 +111,7 @@ public class MyServerEndpoint {
             k++;
         }
         if (connection) {
-            //new Message().execute(user,"connect");
-            connect=true;
+            new Writer().execute(user,"connect");
         }
 
     }
