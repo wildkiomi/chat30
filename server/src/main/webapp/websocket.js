@@ -1,5 +1,6 @@
 var URL = "ws://localhost:8080/web-client";
 var websocket;
+var i=1;
 
 $(document).ready(function(){
     connect();
@@ -11,21 +12,32 @@ function connect(){
     websocket.onmessage = function(evnt) { onMessage(evnt) };
     websocket.onerror = function(evnt) { onError(evnt) };
 }
+
+
 function sendMessage() {
-    websocket.send($("#message").val());
+    var sMessage=document.getElementById('message').value
+   var sendMessage={
+       "message": sMessage.toString(),
+       "sender": "web",
+    }
+    websocket.send(JSON.stringify(sendMessage));
 }
+
+
 function onOpen() {
     updateStatus("connected")
 }
 function onMessage(evnt) {
     if (typeof evnt.data == "string") {
-
+        var rMessage = JSON.parse(evnt.data)
         $("#received_messages").append(
             $('<tr/>')
-                .append($('<td/>').text("1"))
-                .append($('<td/>').text(evnt.data.substring(0,evnt.data.indexOf(":"))))
-                .append($('<td/>').text(evnt.data.substring(evnt.data.indexOf(":")+1))));
+                .append($('<td/>').text(i++))
+                .append($('<td/>').text(rMessage.sender))
+                .append($('<td/>').text(rMessage.message)));
+
     }
+
 }
 function onError(evnt) {
     alert('ERROR: ' + evnt.data);

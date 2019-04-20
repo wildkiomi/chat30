@@ -1,22 +1,27 @@
 package clients;
 
+
+
+import model.Message;
+import model.MessageDecoder;
+import model.MessageEncoder;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import javax.websocket.*;
 
-@ClientEndpoint
+@ClientEndpoint(encoders = MessageEncoder.class, decoders = MessageDecoder.class)
 public class MyClientEndpoint {
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+
     @OnOpen
     public void onOpen(Session session) {
         System.out.println("Connected to endpoint: " + session.getBasicRemote());
-        try {
-            session.getBasicRemote().sendText("Hello");
-        } catch (IOException ex) {
-        }
     }
 
     @OnMessage
-    public void onMessage(String message) {
-        System.out.println(message);
+    public void onMessage(Message message) {
+        System.out.println(String.format("[%s:%s] %s",
+                simpleDateFormat.format(message.getReceived()), message.getSender(), message.getContent()));
     }
 
     @OnError
