@@ -15,7 +15,31 @@ public class ConsoleClients {
     public Session session;
     private static Logger log= Logger.getLogger(ConsoleClients.class);
 
-    protected void start()
+    public class IncomingReader implements Runnable {
+        public void run() {
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            String input = "";
+            try {
+                while ((input = br.readLine()) != null) {
+                    Message message = new Message();
+                    message.setSender("des");
+                    message.setContent(parsing(input));
+                    message.setReceived(new Date());
+                    try {
+                        session.getBasicRemote().sendObject(message);
+                    } catch (EncodeException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+
+    protected void go()
     {
 
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
@@ -29,30 +53,20 @@ public class ConsoleClients {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Thread thread=new Thread(new IncomingReader());
+        thread.start();
 
     }
+    public ConsoleClients(){
+        go();
+    }
+
+    private String parsing(String s){
+        if (!s.startsWith("/"))
+            s="/message "+s;
+        return s;
+    }
     public static void main(String args[]){
-        ConsoleClients client = new ConsoleClients();
-        client.start();
-
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String input = "";
-        try {
-            while ((input = br.readLine())!=null){
-                Message message=new Message();
-                message.setSender("des");
-                message.setContent(input);
-                message.setReceived(new Date());
-                try {
-                    client.session.getBasicRemote().sendObject(message);
-                } catch (EncodeException e) {
-                    e.printStackTrace();
-                }
-            }
-
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        new ConsoleClients();
     }
 }
