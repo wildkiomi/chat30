@@ -21,7 +21,7 @@ public class ConsoleClients {
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
 
         String uri = "ws://localhost:8080/desktop-client";
-
+        System.out.println("Connecting to " + uri);
         try {
             session = container.connectToServer(MyClientEndpoint.class, URI.create(uri));
         } catch (DeploymentException e) {
@@ -38,20 +38,20 @@ public class ConsoleClients {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String input = "";
         try {
-            do{
-                input = br.readLine();
-                input = br.readLine();
-                Message message = new Message();
-                message.setSender("desktop");
+            while ((input = br.readLine())!=null){
+                Message message=new Message();
+                message.setSender("des");
                 message.setContent(input);
                 message.setReceived(new Date());
-                client.session.getBasicRemote().sendObject(message);
-            }while(!input.equals("exit"));
+                try {
+                    client.session.getBasicRemote().sendObject(message);
+                } catch (EncodeException e) {
+                    e.printStackTrace();
+                }
+            }
 
         } catch (IOException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (EncodeException e) {
             e.printStackTrace();
         }
     }
