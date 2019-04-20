@@ -1,15 +1,14 @@
 package clients;
 
+import model.Message;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
-import javax.websocket.ContainerProvider;
-import javax.websocket.DeploymentException;
-import javax.websocket.Session;
-import javax.websocket.WebSocketContainer;
+import java.util.Date;
+import javax.websocket.*;
 
 public class ConsoleClients {
 
@@ -22,7 +21,7 @@ public class ConsoleClients {
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
 
         String uri = "ws://localhost:8080/desktop-client";
-        System.out.println("Connecting to " + uri);
+
         try {
             session = container.connectToServer(MyClientEndpoint.class, URI.create(uri));
         } catch (DeploymentException e) {
@@ -41,13 +40,18 @@ public class ConsoleClients {
         try {
             do{
                 input = br.readLine();
-                if(!input.equals("exit"))
-                    client.session.getBasicRemote().sendText(input);
-
+                input = br.readLine();
+                Message message = new Message();
+                message.setSender("desktop");
+                message.setContent(input);
+                message.setReceived(new Date());
+                client.session.getBasicRemote().sendObject(message);
             }while(!input.equals("exit"));
 
         } catch (IOException e) {
             // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (EncodeException e) {
             e.printStackTrace();
         }
     }
