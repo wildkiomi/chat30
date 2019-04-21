@@ -15,6 +15,7 @@ public class Register implements ICommand{
         if (type.contains("agent")) {
             user.setType("agent");
             points.MyServerEndpoint.freeAgents.add(user);
+            points.MyServerEndpoint.Agents.add(user);
         }
         user.setName(name);
         //new Writer().execute(user,"register");

@@ -25,6 +25,7 @@ public class MyServerEndpoint {
     public User user;
     public static ArrayList<User[]> chats = new ArrayList();
     public static ArrayList<User> freeAgents = new ArrayList();
+    public static ArrayList<User> Agents = new ArrayList();
     public static Map<String, ICommand> map = new HashMap<String, ICommand>();
     private static Logger log= Logger.getLogger(MyServerEndpoint.class);
 
