@@ -67,7 +67,7 @@ public class MyServerEndpoint {
     }
 
     @OnClose
-    public void onClose(Session session) throws IOException, EncodeException {
+    public void onClose(Session session) {
         new Exit().execute(user,"exit");
         log.info("close server");
     }
