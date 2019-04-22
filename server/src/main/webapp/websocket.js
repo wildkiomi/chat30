@@ -1,5 +1,6 @@
 var URL = "ws://localhost:8080/web-client";
 var websocket;
+var i=1;
 
 $(document).ready(function(){
     connect();
@@ -15,10 +16,10 @@ function connect(){
 
 function sendMessage() {
     var sMessage=document.getElementById('message').value
-    if (sMessage.search(/\//) == -1) sMessage="/message "+sMessage
+   // if (sMessage.search(/\//) == -1) sMessage="/message "+sMessage
    var sendMessage={
        "message": sMessage.toString(),
-       "sender": "web",
+       "sender": "you",
     }
     websocket.send(JSON.stringify(sendMessage));
 }
@@ -32,7 +33,7 @@ function onMessage(evnt) {
         var rMessage = JSON.parse(evnt.data)
         $("#received_messages").append(
             $('<tr/>')
-                .append($('<td/>').text("1"))
+                .append($('<td/>').text(i++))
                 .append($('<td/>').text(rMessage.sender))
                 .append($('<td/>').text(rMessage.message)));
 

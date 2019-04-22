@@ -36,6 +36,18 @@ public class Agents {
     public String getAmount() {
         return Integer.toString(freeAgents.size());
     }
+    @GET
+    @Path("{name}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getInfo(@PathParam("name") String name){
+        String info="";
+        for (User agent: freeAgents) {
+            if (name.equals(agent.getName())){
+                info=agent.getName()+" "+agent.getNumberOfChat();
+            }
+        }
+        return info;
+    }
 
 
 

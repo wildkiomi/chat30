@@ -37,6 +37,19 @@ public class Clients{
         return Integer.toString(clients.size());
     }
 
+    @GET
+    @Path("{name}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getInfo(@PathParam("name") String name){
+        String info="";
+        for (User[] client: clients){
+            if (name.equals(client[0].getName())){
+                info=client[0].getName()+" "+client[0].getNumberOfChat();
+            }
+        }
+        return info;
+    }
+
 
 
 

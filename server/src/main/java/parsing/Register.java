@@ -18,8 +18,7 @@ public class Register implements ICommand{
             points.MyServerEndpoint.Agents.add(user);
         }
         user.setName(name);
-        //new Writer().execute(user,"register");
-        log.info("registration of  "+user.getName());
+        log.info("registration of  "+user.getName()+" "+user.getType());
 
         return user;
     }

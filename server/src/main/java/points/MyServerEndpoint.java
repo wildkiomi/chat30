@@ -5,7 +5,6 @@ import model.MessageEncoder;
 import model.User;
 import org.apache.log4j.Logger;
 import parsing.*;
-
 import java.io.IOException;
 import java.util.*;
 import javax.websocket.EncodeException;
@@ -20,7 +19,6 @@ import javax.websocket.server.ServerEndpoint;
 @ServerEndpoint(value="/{client-id}", encoders = MessageEncoder.class, decoders = MessageDecoder.class)
 public class MyServerEndpoint {
 
-
     public Session session;
     public User user;
     public static ArrayList<User[]> chats = new ArrayList();
@@ -34,7 +32,6 @@ public class MyServerEndpoint {
         map.put("/register", new Register());
         map.put("/leave",new Leave());
         map.put("/exit",new Exit());
-        map.put("/message", new Writer());
     }
 
     @OnOpen
@@ -42,25 +39,28 @@ public class MyServerEndpoint {
         this.session=session;
         this.user=new User();
         user.setSession(session);
+        log.info("open server endpoint");
     }
 
     public void parsing(String s) {
-        //log.info("parsing");
-        String command = s;
-        if (s.contains(" ")) command = s.substring(0, s.indexOf(" "));
-        user = map.get(command).execute(user, s);
-        if (!command.equals("/message")) connecting();
+        log.info("parsing");
+        if (s.startsWith("/")) {
+            String command = s;
+            if (s.contains(" ")) command = s.substring(0, s.indexOf(" "));
+            user = map.get(command).execute(user, s);
+            connecting();
+        }
+        else new Writer().execute(user,s);
     }
 
     @OnMessage
     public void onMessage(final Message message, @PathParam("client-id") String clientId) {
             try {
                 session.getBasicRemote().sendObject(message);
-
             } catch (IOException e) {
-                e.printStackTrace();
+                log.info("can't get basic remote of session");
             } catch (EncodeException e) {
-                e.printStackTrace();
+                log.info("can't send message to web client");
             }
         parsing(message.getContent());
 
@@ -68,9 +68,8 @@ public class MyServerEndpoint {
 
     @OnClose
     public void onClose(Session session) throws IOException, EncodeException {
-
-        //notify peers about leaving the chat room
-
+        new Exit().execute(user,"exit");
+        log.info("close server");
     }
 
     public synchronized void connecting() {
@@ -81,7 +80,7 @@ public class MyServerEndpoint {
                     user.setNumberOfChat(chats.get(i)[1].getNumberOfChat());
                     User[] users = {user, chats.get(i)[1]};
                     chats.set(i, users);
-                    //log.info("connect " + chats.get(i)[0].getName() + " " + chats.get(i)[1].getName());
+                    log.info("connect " + chats.get(i)[0].getName() + " " + chats.get(i)[1].getName());
                     connection = true;
                     break;
                 }
@@ -101,7 +100,7 @@ public class MyServerEndpoint {
                     User[] users = {chats.get(i)[0], agent};
                     chats.set(i, users);
                     freeAgents.remove(k);
-                    // log.info("connect " + chats.get(i)[0].getName() + " " + chats.get(i)[1].getName());
+                    log.info("connect " + chats.get(i)[0].getName() + " " + chats.get(i)[1].getName());
                     connection = true;
                     break;
                 }

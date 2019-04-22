@@ -22,19 +22,18 @@ public class ConsoleClients {
             try {
                 while ((input = br.readLine()) != null) {
                     Message message = new Message();
-                    message.setSender("des");
-                    message.setContent(parsing(input));
+                    message.setSender("you");
+                    message.setContent(input);
                     message.setReceived(new Date());
                     try {
                         session.getBasicRemote().sendObject(message);
                     } catch (EncodeException e) {
-                        e.printStackTrace();
+                        log.error("can't send message from client to server");
                     }
                 }
 
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.error("can't read message from console");
             }
         }
     }
@@ -49,9 +48,9 @@ public class ConsoleClients {
         try {
             session = container.connectToServer(MyClientEndpoint.class, URI.create(uri));
         } catch (DeploymentException e) {
-            e.printStackTrace();
+            log.error("can't connect to server");
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("can't get websocket container");
         }
         Thread thread=new Thread(new IncomingReader());
         thread.start();
@@ -64,9 +63,11 @@ public class ConsoleClients {
     private String parsing(String s){
         if (!s.startsWith("/"))
             s="/message "+s;
+        log.info("parsing message");
         return s;
     }
     public static void main(String args[]){
         new ConsoleClients();
+        log.info("new client chat");
     }
 }
