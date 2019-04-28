@@ -16,7 +16,6 @@ function connect(){
 
 function sendMessage() {
     var sMessage=document.getElementById('message').value
-   // if (sMessage.search(/\//) == -1) sMessage="/message "+sMessage
    var sendMessage={
        "message": sMessage.toString(),
        "sender": "you",

@@ -1,7 +1,9 @@
 package rest;
+
 import model.Message;
 import model.User;
 import points.MyServerEndpoint;
+
 
 import javax.websocket.EncodeException;
 import javax.ws.rs.*;

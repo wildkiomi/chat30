@@ -2,6 +2,7 @@ package parsing;
 
 import model.User;
 import org.apache.log4j.Logger;
+import points.MyServerEndpoint;
 
 public class Register implements ICommand{
     private static Logger log = Logger.getLogger(Register.class);
@@ -11,6 +12,11 @@ public class Register implements ICommand{
         String name=message.substring(message.lastIndexOf(" ")+1);
         if (type.contains("client")) {
             user.setType("client");
+
+            User[] chat = new User[2];
+            chat[0] = user;
+            MyServerEndpoint.chats.add(chat);
+            user.setNumberOfChat(MyServerEndpoint.chats.size() - 1);
         }
         if (type.contains("agent")) {
             user.setType("agent");

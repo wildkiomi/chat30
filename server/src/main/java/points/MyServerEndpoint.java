@@ -74,24 +74,6 @@ public class MyServerEndpoint {
 
     public synchronized void connecting() {
         boolean connection = false;
-        if (user.getType().equals("client")) {
-            for (int i = 0; i < chats.size(); i++) {
-                if ((chats.get(i)[1] != null) && (chats.get(i)[0] == null) && (user.getNumberOfChat() != chats.get(i)[1].getNumberOfChat())) {
-                    user.setNumberOfChat(chats.get(i)[1].getNumberOfChat());
-                    User[] users = {user, chats.get(i)[1]};
-                    chats.set(i, users);
-                    log.info("connect " + chats.get(i)[0].getName() + " " + chats.get(i)[1].getName());
-                    connection = true;
-                    break;
-                }
-            }
-            if (!connection) {
-                User[] chat = new User[2];
-                chat[0] = user;
-                chats.add(chat);
-                user.setNumberOfChat(chats.size() - 1);
-            }
-        }
         int k = 0;
         for (User agent : freeAgents) {
             for (int i = 0; i < chats.size(); i++) {
