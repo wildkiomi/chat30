@@ -21,6 +21,11 @@ function sendMessage() {
        "sender": "you",
     }
     websocket.send(JSON.stringify(sendMessage));
+    $("#received_messages").append(
+        $('<tr/>')
+            .append($('<td/>').text(i++))
+            .append($('<td/>').text("you"))
+            .append($('<td/>').text(sMessage.toString())));
 }
 
 

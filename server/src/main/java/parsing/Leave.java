@@ -14,7 +14,8 @@ public class Leave implements ICommand {
 
         new Writer().execute(user, "disconnect");
             freeAgents.add(chats.get(user.getNumberOfChat())[1]);
-            User[] newChat = {chats.get(user.getNumberOfChat())[0],null};
+            User[] newChat = new User[2];
+            newChat[0]=chats.get(user.getNumberOfChat())[0];
             chats.set(user.getNumberOfChat(), newChat);
         log.info("disconnect");
 

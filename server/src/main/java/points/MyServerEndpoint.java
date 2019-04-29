@@ -59,16 +59,8 @@ public class MyServerEndpoint {
 
     @OnMessage
     public void onMessage(final Message message, @PathParam("client-id") String clientId) {
-            try {
-                session.getBasicRemote().sendObject(message);
-            } catch (IOException e) {
-                log.info("can't get basic remote of session");
-            } catch (EncodeException e) {
-                log.info("can't send message to web client");
-            }
         parsing(message.getContent());
             this.message=message;
-
     }
 
     @OnClose
@@ -84,7 +76,9 @@ public class MyServerEndpoint {
             for (int i = 0; i < chats.size(); i++) {
                 if ((chats.get(i)[1] == null) && (agent.getNumberOfChat() != chats.get(i)[0].getNumberOfChat())) {
                     agent.setNumberOfChat(chats.get(i)[0].getNumberOfChat());
-                    User[] users = {chats.get(i)[0], agent};
+                    User[] users = new User[2];
+                    users[0]=chats.get(i)[0];
+                    users[1]=agent;
                     chats.set(i, users);
                     freeAgents.remove(k);
                     log.info("connect " + chats.get(i)[0].getName() + " " + chats.get(i)[1].getName());
@@ -92,10 +86,10 @@ public class MyServerEndpoint {
                     break;
                 }
             }
+            k++;
             if (connection) {
                 break;
             }
-            k++;
         }
         if (connection) {
             new Writer().execute(user,"connect");
