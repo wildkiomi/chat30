@@ -12,11 +12,11 @@ public class Register implements ICommand{
         String name=message.substring(message.lastIndexOf(" ")+1);
         if (type.contains("client")) {
             user.setType("client");
-
             User[] chat = new User[2];
             chat[0] = user;
             MyServerEndpoint.chats.add(chat);
             user.setNumberOfChat(MyServerEndpoint.chats.size() - 1);
+            MyServerEndpoint.clients.add(user);
         }
         if (type.contains("agent")) {
             user.setType("agent");
@@ -24,6 +24,7 @@ public class Register implements ICommand{
             points.MyServerEndpoint.Agents.add(user);
         }
         user.setName(name);
+        MyServerEndpoint.chat.setOwner(user);
         log.info("registration of  "+user.getName()+" "+user.getType());
 
         return user;

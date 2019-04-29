@@ -23,7 +23,8 @@ public class Writer implements ICommand {
             }
             for (User member : chat) {
                 try {
-                    if ((member==user)){continue;}
+                    if ((member==user)&&((!outputMessage.equals("connect"))||(!outputMessage.equals("disconnect")))){
+                        continue;}
                         Message message = new Message();
                         message.setSender(user.getName());
                         message.setContent(outputMessage);

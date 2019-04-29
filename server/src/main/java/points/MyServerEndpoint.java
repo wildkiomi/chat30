@@ -1,8 +1,5 @@
 package points;
-import model.Message;
-import model.MessageDecoder;
-import model.MessageEncoder;
-import model.User;
+import model.*;
 import org.apache.log4j.Logger;
 import parsing.*;
 import java.io.IOException;
@@ -24,8 +21,12 @@ public class MyServerEndpoint {
     public static ArrayList<User[]> chats = new ArrayList();
     public static ArrayList<User> freeAgents = new ArrayList();
     public static ArrayList<User> Agents = new ArrayList();
+    public static ArrayList<User> clients = new ArrayList();
     public static Map<String, ICommand> map = new HashMap<String, ICommand>();
     private static Logger log= Logger.getLogger(MyServerEndpoint.class);
+    public static Message message=null;
+    public static Chat chat;
+    public static ArrayList<Chat> allChats=new ArrayList<Chat>();
 
     {
         log.info("initialize arraylist");
@@ -35,11 +36,14 @@ public class MyServerEndpoint {
     }
 
     @OnOpen
-    public void onOpen(final Session session) throws IOException, EncodeException {
+    public void onOpen(final Session session) {
         this.session=session;
         this.user=new User();
         user.setSession(session);
         log.info("open server endpoint");
+        this.chat=new Chat();
+        chat.setDate(new Date());
+        allChats.add(chat);
     }
 
     public void parsing(String s) {
@@ -63,6 +67,7 @@ public class MyServerEndpoint {
                 log.info("can't send message to web client");
             }
         parsing(message.getContent());
+            this.message=message;
 
     }
 
@@ -94,6 +99,8 @@ public class MyServerEndpoint {
         }
         if (connection) {
             new Writer().execute(user,"connect");
+            if (user.getType().equals("agent")) chat.addMembers(chats.get(user.getNumberOfChat())[0]);
+            if (user.getType().equals("client")) chat.addMembers(chats.get(user.getNumberOfChat())[1]);
         }
 
     }

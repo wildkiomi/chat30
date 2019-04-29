@@ -60,12 +60,6 @@ public class ConsoleClients {
         go();
     }
 
-    private String parsing(String s){
-        if (!s.startsWith("/"))
-            s="/message "+s;
-        log.info("parsing message");
-        return s;
-    }
     public static void main(String args[]){
         new ConsoleClients();
         log.info("new client chat");

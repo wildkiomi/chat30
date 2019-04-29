@@ -2,40 +2,51 @@ package rest;
 
 import model.Message;
 import model.User;
+import parsing.Leave;
 import points.MyServerEndpoint;
-
-
+import javax.json.Json;
+import javax.json.JsonObject;
 import javax.websocket.EncodeException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 @Path("/agents")
+
 public class Agents {
     ArrayList<User> agents = MyServerEndpoint.Agents;
     ArrayList<User> freeAgents = MyServerEndpoint.freeAgents;
+
+    private JsonObject toObject(User user){
+        return Json.createObjectBuilder()
+                .add("type", user.getType())
+                .add("name", user.getName())
+                .add("hashcode", user.hashCode())
+                .build();
+    }
 
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
     public String getAllAgents() {
-        ArrayList<String> output = new ArrayList<String>();
-        for (User agent : agents) {
-            output.add("\n\n" + agent.getName());
+        ArrayList<JsonObject> jsonList=new ArrayList<JsonObject>();
+        for (User agent: agents) {
+            jsonList.add(toObject(agent));
         }
-        return output.toString();
+        return jsonList.toString();
     }
 
     @GET
     @Path("/free")
     @Produces(MediaType.APPLICATION_JSON)
     public String getFreeAgents() {
-        ArrayList<String> output = new ArrayList<String>();
-        for (User agent : freeAgents) {
-            output.add("\n\n" + agent.getName());
+        ArrayList<JsonObject> jsonList=new ArrayList<JsonObject>();
+        for (User agent: freeAgents) {
+            jsonList.add(toObject(agent));
         }
-        return output.toString();
+        return jsonList.toString();
     }
 
     @GET
@@ -46,20 +57,19 @@ public class Agents {
     }
 
     @GET
-    @Path("{name}")
+    @Path("/{name}")
     @Produces(MediaType.APPLICATION_JSON)
-
     public String getInfo(@PathParam("name") String name) {
-        String info = "";
+        User user=null;
         for (User agent : freeAgents) {
             if (name.equals(agent.getName())) {
-                info = agent.getName() + " " + agent.getNumberOfChat();
+                user=agent;
             }
         }
-        return info;
+        return toObject(user).toString();
     }
 
-    @PUT
+    @GET
     @Path("/register/{name}")
     @Produces(MediaType.APPLICATION_JSON)
     public String register(@PathParam("name") String name) {
@@ -68,18 +78,19 @@ public class Agents {
         user.setName(name);
         points.MyServerEndpoint.freeAgents.add(user);
         points.MyServerEndpoint.Agents.add(user);
-        return "agent " + user.getName() + " registrated";
+        return "registrated "+toObject(user);
     }
 
-    @PUT
+    @GET
     @Path("/send_message/{name}/{message}")
     @Produces(MediaType.APPLICATION_JSON)
     public String sendMessage(@PathParam("name") String name, @PathParam("message") String message) {
         Message newMessage = new Message();
         newMessage.setContent(message);
-        newMessage.setSender("restClient");
-        for (User agent : freeAgents) {
-            if (name.equals(agent.getName())) {
+        newMessage.setSender("rest user");
+        newMessage.setReceived(new Date());
+        for (User agent : agents) {
+            if (agent.getName().equals(name)) {
                 try {
                     agent.getSession().getBasicRemote().sendObject(newMessage);
                 } catch (IOException e) {
@@ -93,12 +104,22 @@ public class Agents {
         return "message " + message + " received";
     }
 
-    @PUT
+    @GET
     @Path("/leave/{name}")
     @Produces(MediaType.APPLICATION_JSON)
     public String leaveChat(@PathParam("name") String name) {
-        sendMessage(name,"/leave");
+        for (User agent: agents){
+            if (agent.getName().equals(name))
+                new Leave().execute(agent,"leave");
+        }
+
         return "leave";
+    }
+    @GET
+    @Path("/get_message/{name}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getMessage(@PathParam("name") String name) {
+        return MyServerEndpoint.message.getContent();
     }
 
 
