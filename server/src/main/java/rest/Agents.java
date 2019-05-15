@@ -72,7 +72,7 @@ public class Agents {
     @GET
     @Path("/register/{name}")
     @Produces(MediaType.APPLICATION_JSON)
-    public synchronized String register(@PathParam("name") String name) {
+    public String register(@PathParam("name") String name) {
         User user = new User();
         user.setType("agent");
         user.setName(name);
@@ -107,7 +107,7 @@ public class Agents {
     @GET
     @Path("/leave/{name}")
     @Produces(MediaType.APPLICATION_JSON)
-    public synchronized String leaveChat(@PathParam("name") String name) {
+    public String leaveChat(@PathParam("name") String name) {
         for (User agent: agents){
             if (agent.getName().equals(name))
                 new Leave().execute(agent,"leave");
